@@ -15,7 +15,7 @@ const Part = ({part}) =>{
       <ul>
         {parts.map(part => 
           <li key={part.id}>
-            <Part part={part}/>
+            <Part part={part}/> 
           </li>)} 
       </ul>
     )
