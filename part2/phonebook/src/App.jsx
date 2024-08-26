@@ -1,48 +1,29 @@
-import { useState } from 'react'
-const Filter = ({handleChange, search}) => (
-  <div>
-    <label>
-      <Input text='filter shown with' handleChange={handleChange} value={search}/>
-    </label>
-  </div>
-)
-const PersonForm = (props) => (
-    <form onSubmit={props.handlePerson}>
-        <Input text='Name' handleChange={props.handleName} value={props.name}/>
-        <Input text='Number' handleChange={props.handleNumber} value={props.number}/>
-        <div>
-          <button type="submit">add</button>
-        </div>
-    </form>
-)
-
-const Input = ({text, handleChange, value}) =>(
-  <div>{text}: <input value={value} onChange={handleChange}/></div>
-)
-const Persons = (props) =>{
-  return(
-    <ul style={{listStyleType: 'none', padding: 0, margin: 0,}}>
-      {props.persons.map(person => <Person key={person.name} name={person.name} number={person.number}/>)}
-    </ul>
-  )
-}
-const Person = ({name, number}) => <li>Name: {name} Number: {number}</li>
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import Persons from './components/Persons'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
 
   
 
 const App = () =>{ 
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ]) 
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [search, setSearch] = useState('')
   const [isFilter, setIsFilter] = useState(false)
   
-  
+  useEffect(()=>{
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }, [])
+  console.log('render', persons.length, 'notes')
+
   const addPerson = (event) =>{
     event.preventDefault()
     if(persons.some(person => person.name === newName)){
