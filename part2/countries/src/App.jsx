@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-
-const RenderCountries = ({countries}) => {
+const RenderCountries = ({countries, showCountry}) => {
+  
   if (countries.length>10)
     return (
       <div>
@@ -10,9 +10,8 @@ const RenderCountries = ({countries}) => {
     )
   return (
     <div>
-      {countries.length ===1
-       ? <RenderSingleCountry name={countries[0].name.common} population={countries[0].population} area={countries[0].area} flag={countries[0].flags.png}/>
-       : countries.map(c => <p>{c.name.common}</p>)}
+      {countries.map(c => <p key={c.name.common}>{c.name.common}
+                          <button onClick={()=>showCountry(c)}>show</button></p>)}
     </div>
   )
 }
@@ -52,13 +51,20 @@ const App = () => {
       const countrySearch = countries.filter(
         c => c.name.common.toLowerCase().includes(value.toLowerCase()
         ))
-      setSearch(countrySearch)
+      countrySearch.length === 1
+        ? setCountry(countrySearch[0])
+        : (setSearch(countrySearch), setCountry(null))
     }else{
       setSearch([])
+      setCountry(null)
     }
 
   }, [value, countries])
 
+  
+  const showCountry = (country) =>{
+    setCountry(country)
+  }
   const handleChange = (event) =>{
     setValue(event.target.value)
     console.log('value is', event.target.value)
@@ -67,7 +73,10 @@ const App = () => {
   return (
     <div>
       Country: <input value={value} onChange={handleChange}/>
-      <RenderCountries countries={search}/>
+      {country
+        ? <RenderSingleCountry name={country.name.common} population={country.population} area={country.area} flag={country.flags.png}/>
+        : <RenderCountries countries={search} showCountry = {showCountry}/>}
+      
     </div>
   )
 }
