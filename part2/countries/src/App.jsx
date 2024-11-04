@@ -76,6 +76,7 @@ const App = () => {
     }else{
       setSearch([])
       setCountry(null)
+      setWeather(null)
     }
 
   }, [value, countries])
@@ -86,10 +87,14 @@ const App = () => {
       .then(response => {
         const {lat, lon} = response.data[0]
         axios
-          .get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${api_key}`)
+          .get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${api_key}&units=metric`)
           .then(response => {
-            setWeather(response.data)
-            console.log(response.data)
+            const returnedWeather = {
+              temp: response.data.main.temp,
+              icon: response.data.weather[0].icon,
+              wind: response.data.wind.speed
+            }
+            setWeather(returnedWeather)
           })
       })
   }
@@ -97,7 +102,7 @@ const App = () => {
   
   const showCountry = (country) =>{
     setCountry(country)
-    setWeather(getWeather(country.capital))
+    getWeather(country.capital)
   }
   const handleChange = (event) =>{
     setValue(event.target.value)
@@ -105,8 +110,8 @@ const App = () => {
   }
   
   return (
+    
     <div>
-      {console.log(weather)}
       Country: <input value={value} onChange={handleChange}/>
       {country && weather
         ? <RenderSingleCountry name={country.name.common} 
@@ -114,9 +119,9 @@ const App = () => {
                                population={country.population} 
                                area={country.area} 
                                flag={country.flags.png} 
-                               temp = {testiTuuli} 
-                               weatherIcon = {testiTuuli}
-                               wind = {testiTuuli}/>
+                               temp = {weather.temp}
+                               weatherIcon = {weather.icon}
+                               wind = {weather.wind}/>
         : <RenderCountries countries={search} showCountry = {showCountry}/>}
       
     </div>
